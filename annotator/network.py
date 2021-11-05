@@ -108,12 +108,12 @@ class Network:
 
     def draw(self, ctx, scale: float, offset_x: int, offset_y: int) -> None:
         ctx.set_source_rgb(0.0, 0.0, 0.7)
-        ctx.set_line_width(0.4 * scale)
+        ctx.set_line_width(0.5)
 
         for _, node in self.wn.nodes():  # type: ignore
             (x, y) = self._from_net_coords(node.coordinates[0], node.coordinates[1])
             ctx.arc(
-                x * scale + offset_x, y * scale + offset_y, 4 * scale, 0, 2 * math.pi
+                x * scale + offset_x, y * scale + offset_y, 5, 0, 2 * math.pi
             )
             ctx.fill()
 
@@ -136,6 +136,6 @@ class Network:
 
             (x, y) = self._from_net_coords(e.x, e.y)
             ctx.arc(
-                x * scale + offset_x, y * scale + offset_y, 4 * scale, 0, 2 * math.pi
+                x * scale + offset_x, y * scale + offset_y, 5, 0, 2 * math.pi
             )
             ctx.fill()

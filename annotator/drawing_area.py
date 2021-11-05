@@ -159,7 +159,7 @@ class DrawingArea(Gtk.ScrolledWindow):
     def on_zoom(self, ratio) -> None:
         if self._current_layer == Layer.BACKGROUND:
             self._ratio_image = ratio
-            self.scale_image()
+            self._scale_image()
             self.area.queue_draw()
         elif (
             self._current_layer == Layer.NETWORK or self._current_layer == Layer.OVERLAY
