@@ -1,3 +1,4 @@
+import json
 import math
 
 import cairo
@@ -122,8 +123,35 @@ class DrawingArea(Gtk.ScrolledWindow):
     def load_overlay_from_file(self, filename: str) -> None:
         if self._net:
             try:
-                self._net.load_overlay_from_file(filename)
-                self.area.queue_draw()
+                with open(filename, "r", encoding="utf-8") as f:
+                    content = json.load(f)
+                    if not isinstance(content, dict):
+                        raise Exception("Invalid file format!")
+                    if "offset_img_x" in content:
+                        self._offset_x_image = float(content["offset_img_x"])
+                    if "offset_img_y" in content:
+                        self._offset_y_image = float(content["offset_img_y"])
+                    if "scale_img" in content:
+                        self._ratio_image = float(content["scale_img"])
+                    if "offset_net_x" in content:
+                        self._offset_x_net = float(content["offset_net_x"])
+                    if "offset_net_y" in content:
+                        self._offset_y_net = float(content["offset_net_y"])
+                    if "scale_net" in content:
+                        self._ratio_network = float(content["scale_net"])
+                    if "elements" in content and isinstance(content["elements"], list):
+                        elements = []
+                        for e in content["elements"]:
+                            if "x" in e and "y" in e and "type" in e:
+                                elements.append(
+                                    OverlayElement(
+                                        float(e["x"]),
+                                        float(e["y"]),
+                                        OverlayType(e["type"]),
+                                    )
+                                )
+                        self._net.elements = elements
+                    self.area.queue_draw()
             except Exception as e:
                 dialog = Gtk.MessageDialog(
                     transient_for=self.window,
@@ -137,7 +165,20 @@ class DrawingArea(Gtk.ScrolledWindow):
     def save_overlay_to_file(self, filename: str) -> None:
         if self._net:
             try:
-                self._net.save_overlay_to_file(filename)
+                with open(filename, "w", encoding="utf-8") as f:
+                    json.dump(
+                        {
+                            "offset_img_x": self._offset_x_image,
+                            "offset_img_y": self._offset_y_image,
+                            "scale_img": self._ratio_image,
+                            "offset_net_x": self._offset_x_net,
+                            "offset_net_y": self._offset_y_net,
+                            "scale_net": self._ratio_network,
+                            "elements": [e.__dict__ for e in self._net.elements],
+                        },
+                        f,
+                        ensure_ascii=False,
+                    )
             except Exception as e:
                 dialog = Gtk.MessageDialog(
                     transient_for=self.window,

@@ -1,4 +1,3 @@
-import json
 import math
 from enum import Enum, unique
 from typing import Final, List, Optional, Tuple
@@ -68,19 +67,6 @@ class Network:
             return True
         return False
 
-    def save_overlay_to_file(self, filename: str) -> None:
-        with open(filename, "w", encoding="utf-8") as f:
-            json.dump([e.__dict__ for e in self.elements], f, ensure_ascii=False)
-
-    def load_overlay_from_file(self, filename: str) -> None:
-        with open(filename, "r", encoding="utf-8") as f:
-            self.elements = json.loads(
-                f.read(),
-                object_hook=lambda d: OverlayElement(
-                    d["x"], d["y"], OverlayType(d["type"])
-                ),
-            )
-
     def get_dimensions(
         self, scale: float, offset_x: int, offset_y: int
     ) -> Tuple[int, int]:
@@ -112,9 +98,7 @@ class Network:
 
         for _, node in self.wn.nodes():  # type: ignore
             (x, y) = self._from_net_coords(node.coordinates[0], node.coordinates[1])
-            ctx.arc(
-                x * scale + offset_x, y * scale + offset_y, 5, 0, 2 * math.pi
-            )
+            ctx.arc(x * scale + offset_x, y * scale + offset_y, 5, 0, 2 * math.pi)
             ctx.fill()
 
         for _, pipe in self.wn.pipes():  # type: ignore
@@ -135,7 +119,5 @@ class Network:
                 ctx.set_source_rgb(0.7, 0.0, 0.0)
 
             (x, y) = self._from_net_coords(e.x, e.y)
-            ctx.arc(
-                x * scale + offset_x, y * scale + offset_y, 5, 0, 2 * math.pi
-            )
+            ctx.arc(x * scale + offset_x, y * scale + offset_y, 5, 0, 2 * math.pi)
             ctx.fill()

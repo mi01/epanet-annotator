@@ -12,9 +12,8 @@ def main():
     format_python_files(
         # Add your path here if you want to apply autoformatting to it
         [
-            "gui/",
+            "annotator/",
             "main.py",
-            "setup.py",
         ]
     )
 
